@@ -48,7 +48,7 @@ jobs:
         with:
           path: |
             sccache
-          key: ${{ runner.arch }}-rust-sccache-amd64-${{ steps.run_number.outputs.prev_rn }}
+          key: rust-sccache-amd64-${{ steps.run_number.outputs.prev_rn }}
 
       - name: Delete old cache
         run: |
@@ -68,7 +68,7 @@ jobs:
         with:
           path: |
             sccache
-          key: ${{ runner.arch }}-rust-sccache-amd64-${{ steps.run_number.outputs.next_rn }}
+          key: rust-sccache-amd64-${{ steps.run_number.outputs.next_rn }}
 
       - name: inject cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
@@ -84,7 +84,7 @@ jobs:
           push: true
           provenance: false
           context: "{{defaultContext}}"
-          tags: "ghcr.io/bradenrayhorn/rust-cache-test:next"
+          tags: "ghcr.io/bradenrayhorn/rust-cache-test:next-amd64"
           platforms: linux/amd64
           cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-amd64
           cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-amd64,mode=max
@@ -167,7 +167,7 @@ jobs:
           push: true
           provenance: false
           context: "{{defaultContext}}"
-          tags: "ghcr.io/bradenrayhorn/rust-cache-test:next"
+          tags: "ghcr.io/bradenrayhorn/rust-cache-test:next-arm64"
           platforms: linux/arm64
           cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-arm64
           cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-arm64,mode=max
@@ -195,5 +195,5 @@ jobs:
 
           docker buildx imagetools create \
             --tag $IMAGE:next \
-            $IMAGE:next@amd64 \
-            $IMAGE:next@arm64
+            $IMAGE:next-amd64 \
+            $IMAGE:next-arm64
