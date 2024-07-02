@@ -3,9 +3,9 @@ FROM rust:1.79-alpine@sha256:a454f49f2e15e233f829a0fd9a7cbdac64b6f38ec08aeac2275
 RUN apk add musl-dev pkgconfig wget
 
 RUN wget -O sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.8.1/sccache-v0.8.1-$(uname -m)-unknown-linux-musl.tar.gz \
-	&& tar xzf sccache.tar.gz \
-	&& mv sccache/sccache /usr/local/bin/sccache \
-	&& chmod +x /usr/local/bin/sccache;
+    && tar xzf sccache.tar.gz \
+    && mv sccache-v0.8.1-$(uname -m)-unknown-linux-musl/sccache /usr/local/bin/sccache \
+    && chmod +x /usr/local/bin/sccache;
 
 ENV SCCACHE_DIR=/sccache-cache
 ENV RUSTC_WRAPPER="/usr/local/bin/sccache"
