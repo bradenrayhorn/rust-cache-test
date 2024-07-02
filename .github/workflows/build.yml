@@ -32,9 +32,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3
 
-      - name: Cache
+      - name: Cache Restore
         uses: actions/cache/restore@v4
-        id: cache
+        id: cache-restore
         with:
           path: |
             sccache
@@ -59,9 +59,9 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache
           cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache,mode=max
 
-      - name: Cache
+      - name: Cache Save
         uses: actions/cache/save@v4
-        id: cache
+        id: cache-save
         with:
           path: |
             sccache
