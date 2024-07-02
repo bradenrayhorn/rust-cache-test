@@ -3,5 +3,5 @@ use chrono::prelude::*;
 fn main() {
     let dt = Utc::now();
 
-    println!("Hello, world! {}", dt);
+    println!("Hello, world2! {}", dt);
 }
