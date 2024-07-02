@@ -70,7 +70,7 @@ jobs:
           path: |
             sccache
           key: rust-sccache-amd64-${{ steps.run_number.outputs.next_rn }}
-          always-save: true
+          save-always: true
 
       - name: inject cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
@@ -155,7 +155,7 @@ jobs:
           path: |
             sccache
           key: rust-sccache-arm64-${{ steps.run_number.outputs.next_rn }}
-          always-save: true
+          save-always: true
 
       - name: inject cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
