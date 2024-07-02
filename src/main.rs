@@ -3,7 +3,7 @@ use chrono::prelude::*;
 fn main() {
     let dt = Utc::now();
 
-    zstd::stream::copy_decode(std::io::stdin(), std::io::stdout()).expect("perfect");
+    zstd::stream::copy_decode(std::io::stdin(), std::io::stdout()).expect("perfect!");
 
-    println!("Hello, world3! {}", dt);
+    println!("Hello, world4! {}", dt);
 }
