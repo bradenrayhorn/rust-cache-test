@@ -5,5 +5,5 @@ fn main() {
 
     zstd::stream::copy_decode(std::io::stdin(), std::io::stdout()).expect("perfect!");
 
-    println!("Hello, world4! {}", dt);
+    println!("Hello, world5! {}", dt);
 }
