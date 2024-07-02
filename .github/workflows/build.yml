@@ -40,8 +40,8 @@ jobs:
           PREV_RN=$(( RUN_NUMBER - 1 ))
           NEXT_RN=$(( RUN_NUMBER ))
 
-          echo "::set-output name=next_rn::$NEXT_RN"
-          echo "::set-output name=prev_rn::$PREV_RN"
+          echo "next_rn=$NEXT_RN" >> $GITHUB_OUTPUT
+          echo "prev_rn=$PREV_RN" >> $GITHUB_OUTPUT
 
       - name: Cache Restore
         uses: actions/cache/restore@v4
@@ -125,8 +125,8 @@ jobs:
           PREV_RN=$(( RUN_NUMBER - 1 ))
           NEXT_RN=$(( RUN_NUMBER ))
 
-          echo "::set-output name=next_rn::$NEXT_RN"
-          echo "::set-output name=prev_rn::$PREV_RN"
+          echo "next_rn=$NEXT_RN" >> $GITHUB_OUTPUT
+          echo "prev_rn=$PREV_RN" >> $GITHUB_OUTPUT
 
       - name: Cache Restore
         uses: actions/cache/restore@v4
