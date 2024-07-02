@@ -54,7 +54,7 @@ jobs:
           push: true
           provenance: false
           context: "{{defaultContext}}"
-          tags: "${{ inputs.tags }}"
+          tags: "ghcr.io/bradenrayhorn/rust-cache-test:next"
           platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache
           cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache,mode=max
