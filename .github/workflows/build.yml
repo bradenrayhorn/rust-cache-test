@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build image
+  build-amd64:
+    name: Build amd64 image
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -48,7 +48,19 @@ jobs:
         with:
           path: |
             sccache
-          key: ${{ runner.arch }}-rust-sccache-${{ steps.run_number.outputs.prev_rn }}
+          key: ${{ runner.arch }}-rust-sccache-amd64-${{ steps.run_number.outputs.prev_rn }}
+
+      - name: Delete old cache
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          set +e
+          echo "Deleting previous cache..."
+          gh actions-cache delete "rust-sccache-amd64-${{ steps.run_number.outputs.prev_rn }}" -R ${REPO} -B main --confirm
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
 
       - name: Cache just the Save
         uses: actions/cache@v4
@@ -56,14 +68,14 @@ jobs:
         with:
           path: |
             sccache
-          key: ${{ runner.arch }}-rust-sccache-${{ steps.run_number.outputs.next_rn }}
+          key: ${{ runner.arch }}-rust-sccache-amd64-${{ steps.run_number.outputs.next_rn }}
 
       - name: inject cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
         with:
           cache-map: |
             {
-              "sccache": "/sccache-cache"
+              "sccache": "/sccache-cache",
             }
 
       - name: Build and push
@@ -74,6 +86,114 @@ jobs:
           context: "{{defaultContext}}"
           tags: "ghcr.io/bradenrayhorn/rust-cache-test:next"
           platforms: linux/amd64
-          cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache
-          cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-amd64
+          cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-amd64,mode=max
 
+  build-arm64:
+    name: Build arm64 image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+        with:
+          ref: "${{ inputs.ref }}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3
+        with:
+          platforms: 'arm64,amd64'
+
+      - name: Login to registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3
+
+      - name: find cache run numbers
+        id: run_number
+        run: |
+          RUN_NUMBER=${{ github.run_number }}
+          PREV_RN=$(( RUN_NUMBER - 1 ))
+          NEXT_RN=$(( RUN_NUMBER ))
+
+          echo "::set-output name=next_rn::$NEXT_RN"
+          echo "::set-output name=prev_rn::$PREV_RN"
+
+      - name: Cache Restore
+        uses: actions/cache/restore@v4
+        id: cache-restore
+        with:
+          path: |
+            sccache
+          key: rust-sccache-arm64-${{ steps.run_number.outputs.prev_rn }}
+
+      - name: Delete old cache
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          set +e
+          echo "Deleting previous cache..."
+          gh actions-cache delete "rust-sccache-arm64-${{ steps.run_number.outputs.prev_rn }}" -R ${REPO} -B main --confirm
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+
+      - name: Cache just the Save
+        uses: actions/cache@v4
+        id: cache-restore-save
+        with:
+          path: |
+            sccache
+          key: rust-sccache-arm64-${{ steps.run_number.outputs.next_rn }}
+
+      - name: inject cache into docker
+        uses: reproducible-containers/buildkit-cache-dance@v3.1.0
+        with:
+          cache-map: |
+            {
+              "sccache": "/sccache-cache",
+            }
+
+      - name: Build and push
+        uses: docker/build-push-action@15560696de535e4014efeff63c48f16952e52dd1 # v6
+        with:
+          push: true
+          provenance: false
+          context: "{{defaultContext}}"
+          tags: "ghcr.io/bradenrayhorn/rust-cache-test:next"
+          platforms: linux/arm64
+          cache-from: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-arm64
+          cache-to: type=registry,ref=ghcr.io/bradenrayhorn/rust-cache-test:buildcache-arm64,mode=max
+
+  retag-next:
+    name: Retag image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    needs: [build-arm64, build-amd64]
+    steps:
+      - name: Login to registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3
+
+      - name: Retag
+        run: |
+          IMAGE=ghcr.io/bradenrayhorn/rust-cache-test
+
+          docker buildx imagetools create \
+            --tag $IMAGE:next \
+            $IMAGE:next@amd64 \
+            $IMAGE:next@arm64
