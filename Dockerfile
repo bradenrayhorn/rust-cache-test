@@ -12,7 +12,8 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
     fi
 
 # needs to work for ARM too
-RUN if [ "$arch_env" = "86" ]; then \
+#RUN if [ "$arch_env" = "86" ]; then \
+RUN if [ 1=1 ]; then \
     wget https://github.com/mozilla/sccache/releases/download/v0.8.1/sccache-v0.8.1-x86_64-unknown-linux-musl.tar.gz \
     && tar xzf sccache-v0.8.1-x86_64-unknown-linux-musl.tar.gz \
     && mv sccache-v0.8.1-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache \
@@ -20,7 +21,7 @@ RUN if [ "$arch_env" = "86" ]; then \
     else \
     wget https://github.com/mozilla/sccache/releases/download/v0.8.1/sccache-v0.8.1-armv7-unknown-linux-musleabi.tar.gz \
     && tar xzf sccache-v0.8.1-armv7-unknown-linux-musleabi.tar.gz \
-    && mv sccache-v0.8.1-armv7-unknown-linux-muslabi/sccache /usr/local/bin/sccache \
+    && mv sccache-v0.8.1-armv7-unknown-linux-musleabi/sccache /usr/local/bin/sccache \
     && chmod +x /usr/local/bin/sccache; \
     fi
 
