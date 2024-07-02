@@ -26,7 +26,7 @@ RUN if [ 1=1 ]; then \
     fi
 
 ENV SCCACHE_DIR=/sccache-cache
-ENV RUSTC_WRAPPER="/usr/local/cargo/bin/sccache"
+ENV RUSTC_WRAPPER="/usr/local/bin/sccache"
 
 RUN mkdir /app
 COPY / app/
