@@ -60,7 +60,7 @@ jobs:
 
       - name: Cache just the Save
         uses: actions/cache@v4
-        id: cache-restore
+        id: cache-restore-save
         with:
           path: |
             sccache
