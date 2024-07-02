@@ -1,9 +1,9 @@
 FROM rust:1.79-alpine@sha256:a454f49f2e15e233f829a0fd9a7cbdac64b6f38ec08aeac227595d4fc6eb6d4d as server_builder
 
-RUN apk add musl-dev pkgconfig
+RUN apk add musl-dev pkgconfig openssl-dev
 
 # pin version - todo
-RUN cargo install sccache
+RUN cargo install sccache@0.8.1
 
 ENV SCCACHE_DIR=/sccache-cache
 ENV RUSTC_WRAPPER="/usr/local/cargo/bin/sccache"
