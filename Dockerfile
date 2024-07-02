@@ -11,7 +11,9 @@ ENV SCCACHE_DIR=/sccache-cache
 ENV RUSTC_WRAPPER="/usr/local/bin/sccache"
 
 RUN mkdir /app
-COPY Cargo.toml Cargo.lock src/ app/
+COPY Cargo.toml /app/
+COPY Cargo.lock /app/
+COPY src /app/src
 WORKDIR /app
 
 RUN --mount=type=cache,target=/sccache-cache cargo build --release && sccache --show-stats

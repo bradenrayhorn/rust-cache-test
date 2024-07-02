@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+      actions: write
     steps:
       - name: Checkout code
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
@@ -69,6 +70,7 @@ jobs:
           path: |
             sccache
           key: rust-sccache-amd64-${{ steps.run_number.outputs.next_rn }}
+          always-save: true
 
       - name: inject cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
@@ -94,6 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+      actions: write
     steps:
       - name: Checkout code
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
@@ -152,6 +155,7 @@ jobs:
           path: |
             sccache
           key: rust-sccache-arm64-${{ steps.run_number.outputs.next_rn }}
+          always-save: true
 
       - name: inject cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
